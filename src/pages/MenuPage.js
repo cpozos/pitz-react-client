@@ -1,9 +1,9 @@
 import React from 'react';
 
-function Menu(){
+function MenuPage(){
     return (
         <div></div>
     );
 }
 
-export default Menu;
+export default MenuPage;
