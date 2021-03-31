@@ -1,15 +1,23 @@
 import React, {Component} from 'react';
+import axios from 'axios';
+import md5 from 'md5';
 import './Login.css';
 
 //Sliding Sign In & Sign Up Form
 export default class LoginComponent extends Component {
     
+    static baseurl = "http://localhost:63154/Identity/Register";
+    
     constructor(props) {
         super(props);
         this.state = {
             isRightPanelActive: false,
-            containerClasses: "container"
-        }
+            containerClasses: "container",
+            username: "",
+            userpassword:"",
+            email:"",
+            onSuccessLogIn: props.onSuccessLogIn
+        };
     }
 
     toogleContainerClasses = () => {
@@ -22,6 +30,27 @@ export default class LoginComponent extends Component {
             containerClasses: classes,
             isRightPanelActive: isRightPanelActive
         });
+    }
+
+    singUp = (event) => {
+        event.preventDefault();
+        axios.post(LoginComponent.baseurl,{
+                Name: this.state.username,
+                Email: this.state.email,
+                Password: md5(this.state.userpassword)
+        }).then(response => {
+            this.state.onSuccessLogIn(response.data.accessToken);
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
+    inputChanged = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        this.setState({
+            [name]: value 
+          });
     }
     
     render(){
@@ -36,10 +65,10 @@ export default class LoginComponent extends Component {
                         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                     <span>or use your email for registration</span>
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <button>Sign Up</button>
+                    <input name="username" type="text" placeholder="Name" value={this.state.username} onChange={this.inputChanged} />
+                    <input name="email" type="email" placeholder="Email" value={this.state.email}  onChange={this.inputChanged} />
+                    <input name="userpassword" type="password" placeholder="Password" value={this.state.userpassword}  onChange={this.inputChanged} />
+                    <button onClick={this.singUp}>Sign Up</button>
                 </form>
             </div>
             <div class="form-container sign-in-container">
@@ -53,7 +82,7 @@ export default class LoginComponent extends Component {
                     <span>or use your account</span>
                     <input type="email" placeholder="Email" />
                     <input type="password" placeholder="Password" />
-                    <button>Sign In</button>                    
+                    <button onClick={this.handleSignIn}>Sign In</button>                    
                     <a href="#">Forgot your password?</a>
                 </form>
             </div>
